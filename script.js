@@ -1,112 +1,104 @@
-// Google Apps Script Web App URL'n
-const API_URL =
+const API =
 "https://script.google.com/macros/s/AKfycbwPbdfNQ5ricGadTssdEclKI3f2VQdjHXfwkU8evcemJWc2dm1v8kMRHxuhotepgDShLA/exec";
 
-let apps = [];
-
-// Sayfa açılınca verileri yükle
-window.onload = () => {
-    loadApps();
-
-    document
-        .getElementById("search")
-        .addEventListener("input", searchApps);
-};
+let apps=[];
 
 async function loadApps(){
 
-    const container = document.getElementById("apps");
+const response=await fetch(API);
 
-    container.innerHTML = "<p>Loading...</p>";
+apps=await response.json();
 
-    try{
-
-        const response = await fetch(API_URL);
-
-        apps = await response.json();
-
-        render(apps);
-
-    }catch(e){
-
-        container.innerHTML =
-        "<h2>Veriler yüklenemedi.</h2>";
-
-        console.error(e);
-
-    }
+render(apps);
 
 }
 
 function render(list){
 
-    const container = document.getElementById("apps");
+const container=document.getElementById("apps");
 
-    container.innerHTML = "";
+container.innerHTML="";
 
-    if(list.length===0){
+list.forEach(app=>{
 
-        container.innerHTML="<h2>Sonuç bulunamadı.</h2>";
+container.innerHTML+=`
 
-        return;
+<div class="card">
 
-    }
+<img src="${app.icon}" class="icon">
 
-    list.forEach(app=>{
+<h2>${app.name}</h2>
 
-        container.innerHTML += `
+<p class="description">
 
-        <div class="card">
+${app.description}
 
-            <img src="https://placehold.co/120x120/png?text=APP">
+</p>
 
-            <h2>${app.name}</h2>
+<div class="info">
 
-            <p>
+<span class="category">
 
-            Download safely from Fried Download.
+${app.category}
 
-            </p>
+</span>
 
-            <div class="tags">
+<span class="version">
 
-                <span class="tag new">NEW</span>
+v${app.version}
 
-                <span class="tag">Download</span>
+</span>
 
-            </div>
+</div>
 
-            <a
-            class="download"
-            href="${app.link}"
-            target="_blank"
-            >
-            Download
-            </a>
+<div class="date">
 
-        </div>
+📅 ${app.updated}
 
-        `;
+</div>
 
-    });
+<a
+class="download"
+href="${app.link}"
+target="_blank">
+
+Download
+
+</a>
+
+</div>
+
+`;
+
+});
 
 }
 
 function searchApps(){
 
-    const text =
-    document
-    .getElementById("search")
-    .value
-    .toLowerCase();
+const value=document
+.getElementById("search")
+.value
+.toLowerCase();
 
-    const filtered =
-    apps.filter(app=>
-        app.name
-        .toLowerCase()
-        .includes(text)
-    );
+render(
 
-    render(filtered);
+apps.filter(app=>
+
+app.name.toLowerCase().includes(value)
+
+)
+
+);
 
 }
+
+window.onload=()=>{
+
+loadApps();
+
+document
+.getElementById("search")
+.addEventListener("input",searchApps);
+
+};
