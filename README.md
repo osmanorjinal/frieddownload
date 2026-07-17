@@ -1,2 +1,2 @@
 # frieddownload
-merhaba
+https://osmanorjinal.github.io/frieddownload/
